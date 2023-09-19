@@ -1,5 +1,4 @@
 package bot;
-
 import entities.User2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import repository.UserRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,23 +28,22 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "sope_telegram_bot_api";
+        return getBotUsername();
     }
 
     @Override
     public String getBotToken() {
-        return "6326791650:AAGsnTPqroWivmWVTYMwKYXYqLTWDK2olK0";
+        return getBotToken();
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        // логика которая отвечает за вывод команд на экран
+
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (update.getMessage().hasText()) {
 
             }
         }
-        // действие при нажатии кнопок
         if (update.hasCallbackQuery()) {
             String callbackStep = update.getCallbackQuery().getData();
             long messageId = update.getCallbackQuery().getMessage().getMessageId();
@@ -55,7 +52,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (callbackStep.equals (LOK_BUTTON)) {
                 String text ="https://yandex.ru/maps/org/sp_kompyuter/1052950438/" +
               "\nreviews/?indoorLevel=1&ll=60.597949%2C56.832538&z=17.52";
-                //String text = "Местоположение нашего магазина";
                 executeEditMessageText(text, chatId, messageId);
                 EditMessageText msg = new EditMessageText();
                 msg.setChatId(String.valueOf(chatId));
@@ -64,7 +60,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             } else if (callbackStep.equals(DS_BUTTON)) {
                 String text ="https://www.sp-computer.ru/";
-                //String text = "Описание товаров";
                 executeEditMessageText(text, chatId, messageId);
                 EditMessageText msg = new EditMessageText();
                 msg.setChatId(String.valueOf(chatId));
@@ -73,7 +68,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             }
         }
-        //логика вывода команд
+
         else {
             Integer id = toIntExact(update.getMessage().getChatId());
             String chatId = String.valueOf(update.getMessage().getChatId());
@@ -110,7 +105,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    //метод регистрации
     private void sendResponse(String chatId, Integer userId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
@@ -118,7 +112,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         executeMessageText(message);
     }
 
-    //добавление пользователя в бд
     private void addUserToDatabase(Integer id,String chatId, String userName, String email,String text) {
             userRepository.saveMessage(new User2(id,chatId,userName,email));
             SendMessage message = new SendMessage();
@@ -127,14 +120,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             executeMessageText(message);
         }
 
-
-    // прверка валидности email
     private boolean isEmailValid(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         return email.matches(emailRegex);
     }
 
-    //метод команды /start
     private void stCommandReceived(long chatId, String userName) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
@@ -142,7 +132,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         executeMessageText(message);
     }
 
-    //метод комманды /help
     private void sendTextHelp(long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
@@ -150,7 +139,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         executeMessageText(message);
     }
 
-    // команда категорий товаров
     private void spCategories(long chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
@@ -166,7 +154,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         executeMessageText(message);
     }
 
-    // метод для создания кнопок
     public void Handler(long chatId) {
         SendMessage msg = new SendMessage();
         msg.setChatId(String.valueOf(chatId));
@@ -191,7 +178,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         executeMessage(msg);
     }
 
-    // иформация о не существующей команде
     private void executeMessage(SendMessage message) {
         try {
             execute(message);
@@ -207,13 +193,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         executeMessage(msg);
     }
 
-    // ссылаемый метод для информации при нажатии кнопки
     private void executeEditMessageText(String text, long chatId, long messageId) {
         EditMessageText message = new EditMessageText();
         message.setChatId(String.valueOf(chatId));
         message.setText(text);
         message.setMessageId((int) messageId);
-        //можно вынести в отдельный метод
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -221,7 +205,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    // выносим рефакторинг в отделный метод
     private void executeMessageText(SendMessage message) {
         try {
             execute(message);
